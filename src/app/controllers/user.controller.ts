@@ -1,7 +1,16 @@
 import { Router, type Request, type Response } from "express";
 import { User } from "../models/user.model";
+import z, { keyof } from "zod";
 
 export const userRoute = Router();
+
+const CreateUserZodSchema = z.object({
+    name: z.string(),
+    email: z.string(),
+    password: z.string(),
+    role: z.string().optional(),
+    age: z.number(),
+});
 
 // // For Dropping the Collection
 // userRoute.delete('/drop-collection', async (req: Request, res: Response) => {
@@ -24,7 +33,7 @@ export const userRoute = Router();
 
 userRoute.post('/create-user', async (req: Request, res: Response) => {
     const data = req.body;
-    console.log("Data: ", data);
+    // console.log("Data: ", data);
 
     // ------------- 1st userRouteroach ---------------
     // const myUser = new User({
@@ -35,18 +44,21 @@ userRoute.post('/create-user', async (req: Request, res: Response) => {
 
     // ------------- 2nd userRouteroach ---------------
     try {
-        const user = await User.create(data);
+        const body = CreateUserZodSchema.parse(data);
+        console.log("Zod Body: ", body, '\n<-------------------');
+
+        const user = await User.create(body);
 
         res.status(201).json({
             success: true,
             message: "User created successfully",
             user
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error("❌ Error while creating user: ", error);
         res.status(500).json({
             success: false,
-            data: error
+            data: error?.message
         });
     }
 });

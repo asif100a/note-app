@@ -1,7 +1,6 @@
 import express, { type Application, type Request, type Response } from "express";
 import { noteRoute } from "./app/controllers/note.controller";
 import { userRoute } from "./app/controllers/user.controller";
-import mongoose from "mongoose";
 
 const app: Application = express();
 
