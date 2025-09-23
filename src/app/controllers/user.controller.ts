@@ -12,24 +12,24 @@ const CreateUserZodSchema = z.object({
     age: z.number(),
 });
 
-// // For Dropping the Collection
-// userRoute.delete('/drop-collection', async (req: Request, res: Response) => {
-//     try {
-//         const result = await User.collection.drop();
+// For Dropping the Collection
+userRoute.delete('/drop-collection', async (req: Request, res: Response) => {
+    try {
+        const result = await User.collection.drop();
 
-//         res.status(200).json({
-//             success: true,
-//             message: "User collection dropped successfully",
-//             result
-//         })
-//     } catch (error) {
-//         console.error("❌ Error while dropping User collection: ", error);
-//         res.status(500).json({
-//             success: false,
-//             data: error
-//         });
-//     }
-// });
+        res.status(200).json({
+            success: true,
+            message: "User collection dropped successfully",
+            result
+        })
+    } catch (error) {
+        console.error("❌ Error while dropping User collection: ", error);
+        res.status(500).json({
+            success: false,
+            data: error
+        });
+    }
+});
 
 userRoute.post('/create-user', async (req: Request, res: Response) => {
     const data = req.body;
@@ -44,10 +44,10 @@ userRoute.post('/create-user', async (req: Request, res: Response) => {
 
     // ------------- 2nd userRouteroach ---------------
     try {
-        const body = CreateUserZodSchema.parse(data);
-        console.log("Zod Body: ", body, '\n<-------------------');
+        // const body = CreateUserZodSchema.parse(data);
+        // console.log("Zod Body: ", body, '\n<-------------------');
 
-        const user = await User.create(body);
+        const user = await User.create(data);
 
         res.status(201).json({
             success: true,

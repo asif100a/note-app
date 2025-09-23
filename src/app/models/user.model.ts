@@ -1,18 +1,24 @@
 import { model, Schema } from "mongoose";
-import { type IUser } from "../interfaces/user.interface";
+import { type IAddress, type IUser } from "../interfaces/user.interface";
 import validator from 'validator';
+
+const addressSchema = new Schema<IAddress>({
+    city: { type: String },
+    street: { type: String },
+    zip: { type: Number },
+}, {_id: false})
 
 const userSchema = new Schema<IUser>({
     name: {
-        type: String, 
-        required: [true, "Please provide the user name"], 
+        type: String,
+        required: [true, "Please provide the user name"],
         trim: true,
         minlength: [5, "Min Length must be greater than or equal 5, but got '{VALUE}'"],
         maxlength: 10
     },
     email: {
-        type: String, 
-        required: true, 
+        type: String,
+        required: true,
         unique: [true, "Please send a unique email"],
         trim: true,
         lowercase: true,
@@ -35,7 +41,7 @@ const userSchema = new Schema<IUser>({
         enum: {
             values: ['USER', 'ADMIN'],
             message: "The \"{VALUE}\" is not a valid role.",
-           default: 'USER'
+            default: 'USER'
         }
     },
     age: {
@@ -43,7 +49,8 @@ const userSchema = new Schema<IUser>({
         required: true,
         min: [18, "Age must be greater than or equal of 10, but got {VALUE}"],
         max: [40, "Age must be less than or equal of 40, but got {VALUE}"]
-    }
-});
+    },
+    address: addressSchema
+}, {timestamps: true});
 
 export const User = model("User", userSchema);
