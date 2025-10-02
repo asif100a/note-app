@@ -12,3 +12,7 @@ export interface IUser {
     age: number;
     address: IAddress;
 }
+
+export interface UserInstanceMethod {
+    hashPassword(password: string): string;
+}

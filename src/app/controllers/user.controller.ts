@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import { User } from "../models/user.model";
-import z, { keyof } from "zod";
+import z from "zod";
 
 export const userRoute = Router();
 
@@ -47,7 +47,12 @@ userRoute.post('/create-user', async (req: Request, res: Response) => {
         // const body = CreateUserZodSchema.parse(data);
         // console.log("Zod Body: ", body, '\n<-------------------');
 
-        const user = await User.create(data);
+        const user = new User(data);
+
+        const password = await user.hashPassword(data.password)
+        user.password = password
+
+        await user.save()
 
         res.status(201).json({
             success: true,
