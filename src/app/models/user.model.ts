@@ -1,4 +1,4 @@
-import { Model, model, Schema } from "mongoose";
+import { Document, Model, model, Schema } from "mongoose";
 import { type IAddress, type IUser, type UserInstanceMethod, type UserStaticMethod } from "../interfaces/user.interface";
 import validator from 'validator';
 import bcrypt from "bcryptjs";
@@ -64,6 +64,16 @@ userSchema.method('hashPassword', async function (pass: string) {
 userSchema.static('hashPassword', async function (pass:string) {
   const password = await bcrypt.hash(pass, 10)
   return password;  
-})
+});
+
+// Built-in Mongoose pre Hook
+userSchema.pre('save', async function () {
+    this.password = await bcrypt.hash(this.password, 10)
+});
+
+// Built-in Mongoose post Hook
+userSchema.post('save', async function (doc: Document) {
+    console.log("%s has been saved successfully!", doc._id);
+});
 
 export const User = model<IUser, UserStaticMethod>("User", userSchema);

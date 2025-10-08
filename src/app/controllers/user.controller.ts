@@ -56,10 +56,10 @@ userRoute.post('/create-user', async (req: Request, res: Response) => {
         // await user.save()
 
         //! Build in and Custom static method
-        const password = await User.hashPassword(data.password);
-        console.log("Password: ", password)
+        // const password = await User.hashPassword(data.password);
+        // console.log("Password: ", password)
 
-        data.password = password
+        // data.password = password
 
         const user = await User.create(data)
 
