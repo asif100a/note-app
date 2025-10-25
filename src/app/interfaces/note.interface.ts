@@ -1,4 +1,5 @@
-import type { Types } from "mongoose";
+import { model, type Types } from "mongoose";
+import { noteSchema } from "../models/note.model";
 
 export interface INote {
     title: string;
@@ -11,3 +12,5 @@ export interface INote {
     },
     userId: Types.ObjectId
 }
+
+export const Note = model("Note", noteSchema);

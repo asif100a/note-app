@@ -2,6 +2,7 @@ import { Document, Model, model, Schema } from "mongoose";
 import { type IAddress, type IUser, type UserInstanceMethod, type UserStaticMethod } from "../interfaces/user.interface";
 import validator from 'validator';
 import bcrypt from "bcryptjs";
+import { Note } from "../interfaces/note.interface";
 
 const addressSchema = new Schema<IAddress>({
     city: { type: String },
@@ -53,7 +54,7 @@ const userSchema = new Schema<IUser, UserStaticMethod, UserInstanceMethod>({
         max: [40, "Age must be less than or equal of 40, but got {VALUE}"]
     },
     address: addressSchema
-}, {timestamps: true});
+}, {timestamps: true, versionKey: false, toJSON: {virtuals: true}, toObject: {virtuals: true}});
 
 userSchema.method('hashPassword', async function (pass: string) {
     const password = await bcrypt.hash(pass, 12)
@@ -67,13 +68,35 @@ userSchema.static('hashPassword', async function (pass:string) {
 });
 
 // Built-in Mongoose pre Hook
-userSchema.pre('save', async function () {
+userSchema.pre('save', async function (next) {
     this.password = await bcrypt.hash(this.password, 10)
+    next()
 });
 
+// Pre Query Middleware
+userSchema.pre('find', async function (next) {
+    console.log("Doc: Not found!==========")
+    next()
+})
+
+// Post Query Middleware
+userSchema.post('findOneAndDelete', async function (doc:Document, next) {
+    console.log(doc, '\ndoc-------------->')
+    if(doc) {
+        await Note.deleteMany({userId: doc._id})
+    }
+    next()
+})
+
 // Built-in Mongoose post Hook
-userSchema.post('save', async function (doc: Document) {
+userSchema.post('save', async function (doc: Document, next) {
     console.log("%s has been saved successfully!", doc._id);
+    next()
 });
+
+// Virtual NameAge 
+userSchema.virtual('NameAge').get(function() {
+    return `${this.name} ${this.age}`
+})
 
 export const User = model<IUser, UserStaticMethod>("User", userSchema);

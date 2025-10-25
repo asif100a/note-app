@@ -1,10 +1,9 @@
 import { Router, type Request, type Response } from "express";
 import { model } from "mongoose";
 import { noteSchema } from "../models/note.model";
+import { Note } from "../interfaces/note.interface";
 
 export const noteRoute = Router();
-
-const Note = model("Note", noteSchema);
 
 noteRoute.post('/create-note', async (req: Request, res: Response) => {
     const data = req.body;
