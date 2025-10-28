@@ -1,6 +1,11 @@
 import { Router, type Request, type Response } from "express";
+import { type ParsedQs } from "qs";
 import { User } from "../models/user.model";
 import z from "zod";
+
+type QueryType = {
+    email?: string | ParsedQs | (string | ParsedQs)[]
+}
 
 export const userRoute = Router();
 
@@ -77,7 +82,24 @@ userRoute.post('/create-user', async (req: Request, res: Response) => {
     }
 });
 userRoute.get('/get-all', async (req: Request, res: Response) => {
-    const users = await User.find();
+    // Query Filtering
+    const {email} = req.query;
+    const query: QueryType = {}
+    if(email) query.email = email
+
+    // Sorting
+    // const users = await User.find(query).sort({'email': 'asc'});
+    // const users = await User.find(query).sort({'email': 'ascending'});
+    // const users = await User.find(query).sort({'email': 'desc'});
+    // const users = await User.find(query).sort({'email': 'descending'});
+    // const users = await User.find(query).sort({'email': 1}); // Ascending
+    // const users = await User.find(query).sort({'email': -1}); // Descending
+
+    // Skipping
+    // const users = await User.find(query).skip(6);
+
+    // Limiting
+    const users = await User.find(query).limit(2);
 
     res.status(200).json({
         success: true,
